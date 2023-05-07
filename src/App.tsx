@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import logo from "./logo.svg";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import PortfolioScreen from "./screens/PortfolioScreen";
+import ProjectScreen from "./screens/ProjectScreen";
+import ReportScreen from "./screens/ReportScreen";
+import TrackScreen from "./screens/TrackScreen";
+import RootLayout from "./layouts/RootLayout";
+import PageNotFoundScreen from "./screens/PageNotFoundScreen";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route element={<RootLayout />}>
+                    <Route element={<PortfolioScreen />} path="/portfolio" />
+                    <Route element={<ProjectScreen />} path="/project" />
+                    <Route element={<ReportScreen />} path="/report" />
+                    <Route element={<TrackScreen />} path="/track" />
+                    <Route path="*" element={<PageNotFoundScreen />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
