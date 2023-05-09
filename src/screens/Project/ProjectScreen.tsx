@@ -1,12 +1,6 @@
 import {useState} from "react";
-import {
-    Button,
-    FloatingLabel,
-    Form,
-    FormGroup,
-    ProgressBar,
-    Table,
-} from "react-bootstrap";
+import {Button, FloatingLabel, Form, FormGroup} from "react-bootstrap";
+import DynamicTable from "../../components/DynamicTable/DynamicTable";
 
 const ProjectScreen = () => {
     const [name, setName] = useState("");
@@ -16,6 +10,7 @@ const ProjectScreen = () => {
         <>
             <h1>Manage Projects</h1>
             <Form>
+                <h3>Add New Project</h3>
                 <FormGroup>
                     <FloatingLabel
                         label="Project Name"
@@ -32,7 +27,7 @@ const ProjectScreen = () => {
                 </FormGroup>
                 <FormGroup>
                     <FloatingLabel
-                        label="Project Notes"
+                        label="Project Note"
                         controlId="floatingNote"
                     >
                         <Form.Control
@@ -44,27 +39,12 @@ const ProjectScreen = () => {
                         />
                     </FloatingLabel>
                 </FormGroup>
-                <Button>Save</Button>
+                <Button>Create</Button>
             </Form>
-            <h1>Progress</h1>
-            <Table>
-                <thead>
-                    <tr>
-                        <th>Task</th>
-                        <th>Allocated Budget($)</th>
-                        <th>Completed(%)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>132</td>
-                        <td>$0</td>
-                        <td>
-                            <ProgressBar now={60} label={`60%`} />
-                        </td>
-                    </tr>
-                </tbody>
-            </Table>
+            <div>
+                <h3>Budget Cost For Work Scheduled</h3>
+                <DynamicTable />
+            </div>
         </>
     );
 };

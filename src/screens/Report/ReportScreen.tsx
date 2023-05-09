@@ -7,6 +7,7 @@ const ReportScreen = () => {
     return (
         <>
             <h1>ReportScreen</h1>
+            <p>Report on your completed project</p>
             <div className="my-4">
                 <Form.Select onChange={(e) => setProject(e.target.value)}>
                     <option value={project}>Choose a Project</option>

@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {Container, Form, Row, Table, Col} from "react-bootstrap";
+import {useState} from "react";
+import {Form, Row, Table, Col} from "react-bootstrap";
 
 const PortfolioScreen = () => {
     const [project, setProject] = useState("");
