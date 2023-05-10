@@ -1,5 +1,7 @@
 import {useState} from "react";
 import {Form, Table} from "react-bootstrap";
+import ReportChart from "../../components/ReportChart/ReportChart";
+import ParetoChart from "../../components/ParetoChart/ParetoChart";
 
 const ReportScreen = () => {
     const [project, setProject] = useState("");
@@ -13,6 +15,9 @@ const ReportScreen = () => {
                     <option value={project}>Choose a Project</option>
                 </Form.Select>
             </div>
+            <ReportChart />
+            <h5>Actual Cost</h5>
+            <ParetoChart />
             <Table>
                 <thead>
                     <tr>
