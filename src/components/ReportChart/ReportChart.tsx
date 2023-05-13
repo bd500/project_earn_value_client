@@ -10,7 +10,11 @@ import {
 } from "recharts";
 import data from "../../data/data";
 
-const ReportChart = () => {
+interface ReportChartProps {
+    data: any;
+}
+
+const ReportChart = ({data}: ReportChartProps) => {
     return (
         <>
             <h5>Biểu đồ tổng hợp BCWS-ACWP-BCWP</h5>

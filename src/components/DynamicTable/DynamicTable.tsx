@@ -2,6 +2,7 @@ import {Button, Table} from "react-bootstrap";
 import TableRow from "./TableRow";
 import {useState} from "react";
 import {FiPlus} from "react-icons/fi";
+import {useLocation} from "react-router-dom";
 
 export interface RowData {
     name: string;
@@ -47,12 +48,14 @@ const DynamicTable = () => {
         index: number
     ) => {
         const temp = rowsData[rowNum];
+        console.log(temp);
+
         temp.months[index] = value;
         const newRowsData = rowsData.map((row, i) =>
-            i === index ? temp : row
+            i === rowNum ? temp : row
         );
         setRowsData(newRowsData);
-        console.log(rowsData);
+        // console.log(rowsData);
     };
 
     const handleNameChange = (rowNum: number, value: string) => {
@@ -62,18 +65,26 @@ const DynamicTable = () => {
             i === rowNum ? temp : row
         );
         setRowsData(newRowsData);
-        console.log(rowsData);
+        // console.log(rowsData);
     };
 
     const handlePrecedeChange = (rowNum: number, value: string) => {
         const temp = rowsData[rowNum];
+        // console.log(rowsData);
+
         temp.precede = value;
-        const newRowsData = rowsData.map((row, i) =>
-            i === rowNum ? temp : row
-        );
+        // console.log(temp);
+
+        const newRowsData = rowsData.map((row, i) => {
+            // console.log(`Vi tri hang hien tai ${i} , rowNum la ${rowNum}`);
+
+            return i === rowNum ? temp : row;
+        });
         setRowsData(newRowsData);
-        console.log(rowsData);
+        // console.log(rowsData);
     };
+
+    const location = useLocation();
 
     return (
         <>
@@ -97,7 +108,11 @@ const DynamicTable = () => {
                             handleNameChange={handleNameChange}
                             handlePrecedeChange={handlePrecedeChange}
                         />
-                        <tr>
+                        <tr
+                            hidden={
+                                location.pathname === "/track" ? true : false
+                            }
+                        >
                             <td>
                                 <Button
                                     onClick={addNewRow}

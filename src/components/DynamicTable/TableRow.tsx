@@ -1,6 +1,7 @@
 import {Button, FormControl} from "react-bootstrap";
 import {RowData} from "./DynamicTable";
 import {FaTrash} from "react-icons/fa";
+import {useLocation} from "react-router-dom";
 
 interface TableRowProps {
     rowData: RowData[];
@@ -17,6 +18,8 @@ const TableRow = ({
     handleNameChange,
     handlePrecedeChange,
 }: TableRowProps) => {
+    const location = useLocation();
+
     return (
         <>
             {rowData.map((row, rowNum) => (
@@ -54,7 +57,7 @@ const TableRow = ({
                             />
                         </td>
                     ))}
-                    <td>
+                    <td hidden={location.pathname === "/track" ? true : false}>
                         <Button
                             variant="outline-danger"
                             onClick={() => onDelete(rowNum)}

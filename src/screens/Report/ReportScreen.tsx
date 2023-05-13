@@ -1,23 +1,41 @@
-import {useState} from "react";
-import {Form, Table} from "react-bootstrap";
+import {useEffect, useState} from "react";
+import {Button, Form, Table} from "react-bootstrap";
 import ReportChart from "../../components/ReportChart/ReportChart";
 import ParetoChart from "../../components/ParetoChart/ParetoChart";
+import projects from "../../data/project";
+import data from "../../data/data";
+import Meta from "../../components/Meta/Meta";
 
 const ReportScreen = () => {
-    const [project, setProject] = useState("");
+    const [project, setProject] = useState(-1);
+    const [projectData, setProjectData] = useState({});
+
+    useEffect(() => {
+        const dt = project !== -1 ? data[project].value : {};
+        setProjectData(dt);
+    }, [project]);
 
     return (
         <>
+            <Meta>Report</Meta>
             <h1>ReportScreen</h1>
-            <p>Report on your completed project</p>
+            <p>Report on your project</p>
             <div className="my-4">
-                <Form.Select onChange={(e) => setProject(e.target.value)}>
-                    <option value={project}>Choose a Project</option>
+                <Form.Select
+                    onChange={(e) => setProject(parseInt(e.target.value))}
+                >
+                    <option value={-1}>Choose a Project</option>
+                    {projects.map((p) => (
+                        <option value={p.data} key={p.data}>
+                            {p.name}
+                        </option>
+                    ))}
                 </Form.Select>
             </div>
-            <ReportChart />
-            <h5>Actual Cost</h5>
-            <ParetoChart />
+            {project !== -1 && <ReportChart data={projectData} />}
+            {/* <h5>Biểu đồ chi phí thực tế</h5>
+            {project !== -1 && <ParetoChart data={projectData} />} */}
+            <Button variant="danger">Export To Excel</Button>
             <Table>
                 <thead>
                     <tr>

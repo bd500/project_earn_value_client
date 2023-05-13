@@ -10,7 +10,7 @@ const RootLayout = () => {
                     <SideBar />
                 </Col>
                 <Col md={11}>
-                    <Container className="mx-2 my-3">
+                    <Container className="mx-2 mt-3 my-5">
                         <Outlet />
                     </Container>
                 </Col>

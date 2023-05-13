@@ -1,26 +1,64 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Form, Row, Table, Col} from "react-bootstrap";
+import projects from "../../data/project";
+import data from "../../data/data";
+import {calPortfolio} from "../../helper/calculator";
+import {giveConclustion} from "../../helper/conclusion";
+import Meta from "../../components/Meta/Meta";
 
 const PortfolioScreen = () => {
-    const [project, setProject] = useState("");
+    const initPortfolio = {
+        bac: 0,
+        ac: 0,
+        ev: 0,
+        cv: 0,
+        cpi: 0,
+        vac: 0,
+        eac: 0,
+        etc: 0,
+        sv: 0,
+        tv: 0,
+        spi: 0,
+        pv: 0,
+    };
+
+    const [project, setProject] = useState(-1);
+    const [portfolio, setPortfolio] = useState(initPortfolio);
+
+    useEffect(() => {
+        const report =
+            project !== -1 ? calPortfolio(data[project].value) : initPortfolio;
+        setPortfolio(report);
+        console.log(report);
+    }, [project]);
 
     return (
         <>
+            <Meta>Portfolio</Meta>
             <h1>Portfolio</h1>
             <div className="mb-4">
-                <Form.Select onChange={(e) => setProject(e.target.value)}>
-                    <option value={project}>Choose a project</option>
+                <Form.Select
+                    onChange={(e) => setProject(parseInt(e.target.value))}
+                >
+                    <option value={-1}>Choose a project</option>
+                    {projects.map((p) => (
+                        <option value={p.data} key={p.data}>
+                            {p.name}
+                        </option>
+                    ))}
                 </Form.Select>
             </div>
             <Table>
                 <thead>
                     <tr>
-                        <th>Project</th>
+                        <th> </th>
                         <th>BAC</th>
                         <th>AC</th>
                         <th>EV</th>
                         <th>CV</th>
                         <th>CPI</th>
+                        <th>SV</th>
+                        <th>SPI</th>
                         <th>VAC</th>
                         <th>EAC</th>
                         <th>ETC</th>
@@ -29,17 +67,27 @@ const PortfolioScreen = () => {
                 <tbody>
                     <tr>
                         <td>Total:</td>
-                        <td>$0</td>
-                        <td>$0</td>
-                        <td>$0</td>
-                        <td>$0</td>
-                        <td>$0</td>
-                        <td>$0</td>
-                        <td>$0</td>
-                        <td>$0</td>
+                        <td>${portfolio.bac}</td>
+                        <td>${portfolio.ac}</td>
+                        <td>${portfolio.ev}</td>
+                        <td>${portfolio.cv}</td>
+                        <td>${portfolio.cpi}</td>
+                        <td>${portfolio.sv}</td>
+                        <td>${portfolio.spi}</td>
+                        <td>${portfolio.vac}</td>
+                        <td>${portfolio.eac}</td>
+                        <td>${portfolio.etc}</td>
                     </tr>
                 </tbody>
             </Table>
+            {project >= 0 && (
+                <Row>
+                    <Col md={1}>
+                        <strong>Conclusion:</strong>
+                    </Col>
+                    <Col>{giveConclustion(portfolio)}</Col>
+                </Row>
+            )}
             <div className="portfolio-desc mt-3">
                 <Row>
                     <Col md={3}>

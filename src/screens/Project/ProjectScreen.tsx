@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {Button, FloatingLabel, Form, FormGroup} from "react-bootstrap";
 import DynamicTable from "../../components/DynamicTable/DynamicTable";
+import Meta from "../../components/Meta/Meta";
 
 const ProjectScreen = () => {
     const [name, setName] = useState("");
@@ -8,6 +9,7 @@ const ProjectScreen = () => {
 
     return (
         <>
+            <Meta>Projects</Meta>
             <h1>Manage Projects</h1>
             <Form>
                 <h3>Add New Project</h3>
@@ -45,6 +47,7 @@ const ProjectScreen = () => {
                 <h3>Budget Cost For Work Scheduled</h3>
                 <DynamicTable />
             </div>
+            <Button>Import Excel</Button>
         </>
     );
 };
