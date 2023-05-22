@@ -1,11 +1,4 @@
-import {
-    Button,
-    Form,
-    FormSelect,
-    InputGroup,
-    ProgressBar,
-    Table,
-} from "react-bootstrap";
+import {Button, Form, FormSelect, InputGroup, Table} from "react-bootstrap";
 import DynamicTable from "../../components/DynamicTable/DynamicTable";
 import {useState} from "react";
 import {FaSave} from "react-icons/fa";

@@ -7,15 +7,21 @@ import ReportScreen from "./screens/Report/ReportScreen";
 import TrackScreen from "./screens/Track/TrackScreen";
 import RootLayout from "./layouts/RootLayout";
 import DashboardScreen from "./screens/Dashboard/DashboardScreen";
+import HomeScreen from "./screens/Home/HomeScreen";
+import LoginScreen from "./screens/Login/LoginScreen";
+import RegisterScreen from "./screens/Register/RegisterScreen";
+import HomeLayout from "./layouts/HomeLayout";
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route element={<HomeLayout />}>
+                    <Route element={<HomeScreen />} path="/" />
+                    <Route element={<LoginScreen />} path="/login" />
+                    <Route element={<RegisterScreen />} path="/register" />
+                </Route>
                 <Route element={<RootLayout />}>
-                    {/* tam */}
-                    <Route element={<h1>123</h1>} path="/" />
-
                     <Route element={<DashboardScreen />} path="/dashboard" />
                     <Route element={<PortfolioScreen />} path="/portfolio" />
                     <Route element={<ProjectScreen />} path="/project" />

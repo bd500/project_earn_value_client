@@ -1,20 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-tooltip/dist/react-tooltip.css";
 import App from "./App";
+import "./index.css";
 import {ProSidebarProvider} from "react-pro-sidebar";
+import {Provider} from "react-redux";
+import store from "./store/store";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
 );
 root.render(
-    <ProSidebarProvider>
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
-    </ProSidebarProvider>
+    <Provider store={store}>
+        <ProSidebarProvider>
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        </ProSidebarProvider>
+    </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
