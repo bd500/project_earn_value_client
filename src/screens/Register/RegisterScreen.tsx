@@ -5,6 +5,7 @@ import {AppDispatch, RootState} from "../../store/store";
 import {useDispatch, useSelector} from "react-redux";
 import {register} from "../../store/authSlice";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
 const RegisterScreen = () => {
     const [email, setEmail] = useState("");
@@ -17,11 +18,15 @@ const RegisterScreen = () => {
 
     const submitHandler = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(register({email, name, password}));
+        toast.promise(dispatch(register({email, name, password})).unwrap(), {
+            pending: "Loading",
+            error: "Register Failed",
+            success: "Account Created, You can now login to our website.",
+        });
     };
 
     useEffect(() => {
-        if (userInfo) navigate("/");
+        if (userInfo) navigate("/dashboard");
     }, [userInfo, navigate]);
 
     return (

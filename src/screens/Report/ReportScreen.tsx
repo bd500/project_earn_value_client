@@ -1,30 +1,37 @@
 import {useEffect, useState} from "react";
-import {Button, Form, Table} from "react-bootstrap";
+import {Form, Table} from "react-bootstrap";
 import ReportChart from "../../components/ReportChart/ReportChart";
 import ParetoChart from "../../components/ParetoChart/ParetoChart";
 import projects from "../../data/project";
 import data from "../../data/data";
 import Meta from "../../components/Meta/Meta";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from "../../store/store";
+import {getProjects} from "../../store/projectSlice";
 
 const ReportScreen = () => {
-    const [project, setProject] = useState(-1);
+    const [project, setProject] = useState("");
     const [projectData, setProjectData] = useState({});
 
+    const dispatch = useDispatch<AppDispatch>();
+
     useEffect(() => {
-        const dt = project !== -1 ? data[project].value : {};
+        // const dt = project !== -1 ? data[project].value : {};
+        const dt = project ? data[0].value : {};
         setProjectData(dt);
     }, [project]);
+
+    useEffect(() => {
+        dispatch(getProjects());
+    }, []);
 
     return (
         <>
             <Meta>Report</Meta>
-            <h1>ReportScreen</h1>
-            <p>Report on your project</p>
+            <h1>{project ? "Nothing" : "Project"} Report</h1>
             <div className="my-4">
-                <Form.Select
-                    onChange={(e) => setProject(parseInt(e.target.value))}
-                >
-                    <option value={-1}>Choose a Project</option>
+                <Form.Select onChange={(e) => setProject(e.target.value)}>
+                    <option value={""}>Choose a Project</option>
                     {projects.map((p) => (
                         <option value={p.data} key={p.data}>
                             {p.name}
@@ -32,10 +39,10 @@ const ReportScreen = () => {
                     ))}
                 </Form.Select>
             </div>
-            {project !== -1 && <ReportChart data={projectData} />}
+            {project !== "" && <ReportChart data={projectData} />}
             {/* <h5>Biểu đồ chi phí thực tế</h5>
             {project !== -1 && <ParetoChart data={projectData} />} */}
-            <Button variant="danger">Export To Excel</Button>
+
             <Table>
                 <thead>
                     <tr>

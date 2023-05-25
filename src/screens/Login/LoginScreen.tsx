@@ -5,6 +5,7 @@ import {useSelector, useDispatch} from "react-redux";
 import {AppDispatch, RootState} from "../../store/store";
 import {login} from "../../store/authSlice";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
 const LoginScreen = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -16,11 +17,14 @@ const LoginScreen = () => {
 
     const submitHandler = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(login({email, password}));
+        toast.promise(dispatch(login({email, password})).unwrap(), {
+            pending: "Loading",
+            error: "Login Failed",
+        });
     };
 
     useEffect(() => {
-        if (userInfo) navigate("/");
+        if (userInfo) navigate("/dashboard");
     }, [userInfo, navigate]);
 
     return (

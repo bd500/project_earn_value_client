@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "react-tooltip/dist/react-tooltip.css";
 import App from "./App";
 import "./index.css";
+import "react-toastify/dist/ReactToastify.css";
 import {ProSidebarProvider} from "react-pro-sidebar";
 import {Provider} from "react-redux";
 import store from "./store/store";

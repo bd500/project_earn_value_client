@@ -5,6 +5,9 @@ import data from "../../data/data";
 import {calPortfolio} from "../../helper/calculator";
 import {giveConclustion} from "../../helper/conclusion";
 import Meta from "../../components/Meta/Meta";
+import {useDispatch, useSelector} from "react-redux";
+import {getProjects} from "../../store/projectSlice";
+import {AppDispatch, RootState} from "../../store/store";
 
 const PortfolioScreen = () => {
     const initPortfolio = {
@@ -25,6 +28,13 @@ const PortfolioScreen = () => {
     const [project, setProject] = useState(-1);
     const [portfolio, setPortfolio] = useState(initPortfolio);
 
+    const dispatch = useDispatch<AppDispatch>();
+    const {projects} = useSelector((state: RootState) => state.projects);
+
+    useEffect(() => {
+        dispatch(getProjects());
+    }, []);
+
     useEffect(() => {
         const report =
             project !== -1 ? calPortfolio(data[project].value) : initPortfolio;
@@ -42,7 +52,7 @@ const PortfolioScreen = () => {
                 >
                     <option value={-1}>Choose a project</option>
                     {projects.map((p) => (
-                        <option value={p.data} key={p.data}>
+                        <option value={p.id} key={p.id}>
                             {p.name}
                         </option>
                     ))}

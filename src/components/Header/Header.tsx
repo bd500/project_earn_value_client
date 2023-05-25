@@ -1,13 +1,19 @@
 import {Container, Nav, Navbar} from "react-bootstrap";
 import {LinkContainer} from "react-router-bootstrap";
-import {useSelector} from "react-redux";
-import {RootState} from "../../store/store";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../../store/store";
 import {useNavigate} from "react-router-dom";
+import {logout} from "../../store/authSlice";
 
 const Header = () => {
     const {userInfo} = useSelector((state: RootState) => state.auth);
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
 
+    const logoutHandler = () => {
+        dispatch(logout());
+        navigate("/");
+    };
     return (
         <>
             <Navbar bg="dark" expand="lg" variant="dark">
@@ -30,12 +36,7 @@ const Header = () => {
                                         Dashboard
                                     </Nav.Link>
                                 </Nav.Item>
-                                <Nav.Item
-                                    onClick={() => {
-                                        localStorage.clear();
-                                        navigate(0);
-                                    }}
-                                >
+                                <Nav.Item onClick={logoutHandler}>
                                     <Nav.Link>Logout</Nav.Link>
                                 </Nav.Item>
                             </>

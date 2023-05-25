@@ -1,55 +1,55 @@
-import {Button, Form, FormSelect, InputGroup, Table} from "react-bootstrap";
+import {Card, Col, FormGroup, FormSelect, Row} from "react-bootstrap";
 import DynamicTable from "../../components/DynamicTable/DynamicTable";
-import {useState} from "react";
-import {FaSave} from "react-icons/fa";
+import {useEffect, useState} from "react";
 import Meta from "../../components/Meta/Meta";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../../store/store";
+import {getProjects} from "../../store/projectSlice";
 
 const TrackScreen = () => {
-    const [project, setProject] = useState("");
+    const [projectId, setProject] = useState("");
+
+    const dispatch = useDispatch<AppDispatch>();
+    const {projects} = useSelector((state: RootState) => state.projects);
+
+    useEffect(() => {
+        dispatch(getProjects());
+    }, []);
 
     return (
         <>
             <Meta>Track</Meta>
-            <h1>Track Your Working Project</h1>
-            <h3>Actual Cost For Perform Scheduled</h3>
+            <h1>Track On Your Working Project</h1>
             <div className="mb-4">
-                <FormSelect onChange={(e) => setProject(e.target.value)}>
-                    <option value={project}>Choose a Project</option>
-                </FormSelect>
+                <FormGroup>
+                    <FormSelect onChange={(e) => setProject(e.target.value)}>
+                        <option value={""}>Choose a Project</option>
+                        {projects?.map((p) => (
+                            <option key={p.id} value={p.id}>
+                                {p.name}
+                            </option>
+                        ))}
+                    </FormSelect>
+                </FormGroup>
             </div>
-            <DynamicTable />
+            <div hidden={projectId ? false : true}>
+                <Row>
+                    <Col md={4}>
+                        <Card body className="mb-4">
+                            <Card.Title>
+                                <b>Project Note</b>
+                            </Card.Title>
+                            <Card.Text>This is a note</Card.Text>
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+            <h3>Actual Cost For Perform Scheduled</h3>
+            <DynamicTable projectId={projectId} />
             <div>
-                <h3>Budget Cost For Work Performed</h3>
-                <Table>
-                    <thead>
-                        <tr>
-                            <td>ID</td>
-                            <th>Task</th>
-                            <th>Earn Value($)</th>
-                            <th>Completed(%)</th>
-                            <th>Progress</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1.1</td>
-                            <td>132</td>
-                            <td>$0</td>
-                            <td>
-                                <InputGroup>
-                                    <Form.Control placeholder="0" />
-                                    <InputGroup.Text>%</InputGroup.Text>
-                                </InputGroup>
-                            </td>
-                            <td>
-                                {/* <ProgressBar now={60} label={`60%`} /> */}
-                            </td>
-                        </tr>
-                    </tbody>
-                </Table>
-                <Button variant="success">
-                    <FaSave /> Save
-                </Button>
+                *The excel file must be in this structure.
+                <br /> You can fill in the above table or you download our excel
+                template to use :)
             </div>
         </>
     );

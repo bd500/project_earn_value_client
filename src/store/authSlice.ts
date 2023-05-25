@@ -18,13 +18,8 @@ const config = {
     },
 };
 
-const currentUser = localStorage.getItem("userInfo");
-
-type SliceState = {
-    userInfo: any;
-};
-const initialState: SliceState = {
-    userInfo: currentUser,
+const initialState = {
+    userInfo: JSON.parse(localStorage.getItem("userInfo") || ""),
 };
 
 export const login = createAsyncThunk(
@@ -54,7 +49,12 @@ export const register = createAsyncThunk(
 const loginSlice = createSlice({
     name: "login",
     initialState: initialState,
-    reducers: {},
+    reducers: {
+        logout: (state) => {
+            state.userInfo = null;
+            localStorage.clear();
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(login.fulfilled, (state, action) => {
             state.userInfo = action.payload;
@@ -70,5 +70,6 @@ const loginSlice = createSlice({
     },
 });
 
-const {reducer} = loginSlice;
+const {reducer, actions} = loginSlice;
 export default reducer;
+export const {logout} = actions;

@@ -11,10 +11,19 @@ import HomeScreen from "./screens/Home/HomeScreen";
 import LoginScreen from "./screens/Login/LoginScreen";
 import RegisterScreen from "./screens/Register/RegisterScreen";
 import HomeLayout from "./layouts/HomeLayout";
+import {ToastContainer} from "react-toastify";
+import Header from "./components/Header/Header";
 
 function App() {
     return (
         <BrowserRouter>
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                theme={"colored"}
+                pauseOnFocusLoss={false}
+            />
+            <Header />
             <Routes>
                 <Route element={<HomeLayout />}>
                     <Route element={<HomeScreen />} path="/" />

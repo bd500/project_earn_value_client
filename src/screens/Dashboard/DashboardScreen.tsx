@@ -3,38 +3,35 @@ import {IoBriefcaseOutline} from "react-icons/io5";
 import {FiClipboard} from "react-icons/fi";
 import ProjectSumary from "../../components/ProjectSumary/ProjectSumary";
 import Meta from "../../components/Meta/Meta";
-
-interface Project {
-    name: string;
-    note?: string;
-    status: string;
-}
+import {useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {getProjects} from "../../store/projectSlice";
+import {AppDispatch, RootState} from "../../store/store";
 
 const DashboardScreen = () => {
-    const projects = [
-        {
-            name: "123",
-            status: "Ongoing",
-        },
-        {
-            name: "456",
-            status: "Completed",
-        },
-        {
-            name: "789",
-            note: "this is a note",
-            status: "At Risk",
-        },
-    ];
+    const dispatch = useDispatch<AppDispatch>();
+    const {projects} = useSelector((state: RootState) => state.projects);
+
+    useEffect(() => {
+        dispatch(getProjects());
+    }, []);
 
     let completed = 0;
     let atRisk = 0;
     let ongoing = 0;
 
+    let tasks = 0;
+    let tasksFinished = 0;
+
     projects.forEach((p) => {
         if (p.status === "Completed") completed++;
         else if (p.status === "Ongoing") ongoing++;
         else atRisk++;
+
+        p.tasks?.map((t) => {
+            if (t.progress === 100) tasksFinished++;
+            tasks++;
+        });
     });
 
     const progress = [
@@ -43,7 +40,7 @@ const DashboardScreen = () => {
         {name: "At Risk", value: atRisk, color: "#FF8042"},
     ];
 
-    const renderProject = (project: Project) => {
+    const renderProject = (project: any) => {
         return (
             <tr>
                 <td>{project.name}</td>
@@ -74,7 +71,9 @@ const DashboardScreen = () => {
                     <Card body>
                         <Card.Title>
                             <Row>
-                                <Col>Projects</Col>
+                                <Col>
+                                    <b>Projects</b>
+                                </Col>
                                 <Col md={5}>
                                     <div
                                         style={{background: "#ceffd7"}}
@@ -99,7 +98,9 @@ const DashboardScreen = () => {
                     <Card body>
                         <Card.Title>
                             <Row>
-                                <Col>Tasks</Col>
+                                <Col>
+                                    <b>Tasks</b>
+                                </Col>
                                 <Col md={5}>
                                     <div
                                         style={{background: "#ffe7ea"}}
@@ -117,7 +118,7 @@ const DashboardScreen = () => {
                                 </Col>
                             </Row>
                         </Card.Title>
-                        <Card.Text>{`${completed}/${projects.length}`}</Card.Text>
+                        <Card.Text>{`${tasksFinished}/${tasks}`}</Card.Text>
                     </Card>
                 </Col>
             </Row>

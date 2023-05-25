@@ -1,8 +1,13 @@
-import {Outlet} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import SideBar from "../components/SideBar/SideBar";
 import {Row, Col, Container} from "react-bootstrap";
 
 const RootLayout = () => {
+    const navigate = useNavigate();
+    const userInfo = JSON.parse(localStorage.getItem("userInfo") || "");
+
+    if (!userInfo) navigate("/");
+
     return (
         <div>
             <Row>

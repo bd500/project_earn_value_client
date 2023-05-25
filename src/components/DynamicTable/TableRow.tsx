@@ -1,29 +1,30 @@
 import {Button, FormControl} from "react-bootstrap";
 import {RowData} from "./DynamicTable";
 import {FaTrash} from "react-icons/fa";
-import {useLocation} from "react-router-dom";
 
 interface TableRowProps {
     rowData: RowData[];
     onDelete: (rowNum: number) => void;
-    handleMonthsChange: (rowNum: number, value: number, index: number) => void;
+    handleAcChange: (rowNum: number, value: number, index: number) => void;
+    handlePvChange: (rowNum: number, value: number, index: number) => void;
     handleNameChange: (rowNum: number, value: string) => void;
     handlePrecedeChange: (rowNum: number, value: string) => void;
+    handleProgressChange: (rowNum: number, value: string) => void;
 }
 
 const TableRow = ({
     rowData,
     onDelete,
-    handleMonthsChange,
+    handleAcChange,
+    handlePvChange,
     handleNameChange,
     handlePrecedeChange,
+    handleProgressChange,
 }: TableRowProps) => {
-    const location = useLocation();
-
     return (
         <>
             {rowData.map((row, rowNum) => (
-                <tr>
+                <tr className="flex-row align-items-center">
                     <td>{rowNum + 1}</td>
                     <td>
                         <FormControl
@@ -41,23 +42,57 @@ const TableRow = ({
                             }
                         />
                     </td>
-                    {row.months.map((item, index) => (
-                        <td>
-                            <FormControl
-                                value={item}
-                                onChange={(e) =>
-                                    handleMonthsChange(
-                                        rowNum,
-                                        parseInt(e.target.value),
-                                        index
-                                    )
-                                }
-                                type="number"
-                                size="sm"
-                            />
+                    <td>
+                        <FormControl
+                            value={row.progress}
+                            onChange={(e) =>
+                                handleProgressChange(rowNum, e.target.value)
+                            }
+                            type="number"
+                            isInvalid={row.progress > 100 || row.progress < 0}
+                        />
+                    </td>
+                    <td>
+                        <div style={{color: "red", textDecoration: "bold"}}>
+                            AC
+                        </div>
+                        <div style={{color: "blue", textDecoration: "bold"}}>
+                            PV
+                        </div>
+                    </td>
+                    {row.ac.map((item, index) => (
+                        <td key={index}>
+                            <div>
+                                <FormControl
+                                    value={item}
+                                    onChange={(e) =>
+                                        handleAcChange(
+                                            rowNum,
+                                            parseInt(e.target.value),
+                                            index
+                                        )
+                                    }
+                                    type="number"
+                                    size="sm"
+                                />
+                            </div>
+                            <div>
+                                <FormControl
+                                    value={row.pv[index]}
+                                    onChange={(e) =>
+                                        handlePvChange(
+                                            rowNum,
+                                            parseInt(e.target.value),
+                                            index
+                                        )
+                                    }
+                                    type="number"
+                                    size="sm"
+                                />
+                            </div>
                         </td>
                     ))}
-                    <td hidden={location.pathname === "/track" ? true : false}>
+                    <td>
                         <Button
                             variant="outline-danger"
                             onClick={() => onDelete(rowNum)}
