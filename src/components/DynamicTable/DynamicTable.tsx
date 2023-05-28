@@ -13,30 +13,18 @@ export interface RowData {
     precede: number | string;
     ac: number[];
     pv: number[];
-    progress: number;
+    progress: number[];
 }
 
 const DynamicTable = ({projectId}: {projectId: string}) => {
     const dispatch = useDispatch<AppDispatch>();
     const {project} = useSelector((state: RootState) => state.projects);
 
-    // const data: Array<RowData> = [
-    //     {
-    //         name: "--",
-    //         precede: "--",
-    //         ac: Array.from(
-    //             {length: project.duration || 12},
-    //             (item, index) => 0
-    //         ),
-    //         pv: Array.from(
-    //             {length: project.duration || 12},
-    //             (item, index) => 0
-    //         ),
-    //         progress: 0,
-    //     },
-    // ];
-
     const [rowsData, setRowsData] = useState<RowData[]>([]);
+
+    const newCostCol = (duration: number) => {
+        return Array.from({length: duration}, (item, index) => 0);
+    };
 
     useEffect(() => {
         if (projectId)
@@ -51,15 +39,10 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
         const input = {
             name: "--",
             precede: "--",
-            ac: Array.from(
-                {length: project.duration || 12},
-                (item, index) => 0
-            ),
-            pv: Array.from(
-                {length: project.duration || 12},
-                (item, index) => 0
-            ),
-            progress: 0,
+            ac: newCostCol(project.duration || 12),
+            pv: newCostCol(project.duration || 12),
+            progress: newCostCol(project.duration || 12),
+            // ev: newCostCol(project.duration || 12),
         };
 
         setRowsData([...rowsData, input]);
@@ -88,14 +71,6 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
     };
 
     const handlePvChange = (rowNum: number, value: number, index: number) => {
-        // const temp = rowsData[rowNum];
-
-        // temp.pv[index] = value;
-        // const newRowsData = rowsData.map((row, i) =>
-        //     i === rowNum ? temp : row
-        // );
-        // setRowsData(newRowsData);
-
         setRowsData((prevRowsData) => {
             const newRowsData = [...prevRowsData];
             const row = {...newRowsData[rowNum]};
@@ -103,6 +78,9 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
             const pv = [...row.pv];
             pv[index] = value;
             row.pv = pv;
+            let sumPV = 0;
+            row.pv.forEach((i) => (sumPV += i));
+            //row.ev = (row.progress * sumPV) / 100;
 
             newRowsData[rowNum] = row;
 
@@ -132,13 +110,20 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
         });
     };
 
-    const handleProgressChange = (rowNum: number, value: string) => {
+    const handleProgressChange = (
+        rowNum: number,
+        value: string,
+        index: number
+    ) => {
         setRowsData((prevRowsData) => {
             const newRowsData = [...prevRowsData];
             const row = {...newRowsData[rowNum]};
-            row.progress = parseFloat(value);
+            const progress = [...row.progress];
+            progress[index] = parseFloat(value);
+            row.progress = progress;
+            //let sumEV = 0;
+            //row.ev.forEach((i) => sumEV += i);
             newRowsData[rowNum] = row;
-
             return newRowsData;
         });
     };
@@ -184,8 +169,8 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
                             <th>ID</th>
                             <th>Task</th>
                             <th>Pre</th>
-                            <th>%</th>
-                            <th>Cost</th>
+                            {/* <th>%</th> */}
+                            <th>Type</th>
                             {Array.from(
                                 {
                                     length: project.duration || 12,
@@ -205,6 +190,7 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
                             handlePrecedeChange={handlePrecedeChange}
                             handleProgressChange={handleProgressChange}
                             handlePvChange={handlePvChange}
+                            // handleEvChange={handleEvChange}
                         />
                         <tr>
                             <td>

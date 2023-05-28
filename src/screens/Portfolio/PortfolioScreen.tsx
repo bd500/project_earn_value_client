@@ -1,13 +1,13 @@
 import {useEffect, useState} from "react";
 import {Form, Row, Table, Col} from "react-bootstrap";
-import projects from "../../data/project";
-import data from "../../data/data";
-import {calPortfolio} from "../../helper/calculator";
+import {calCost, calPortfolio} from "../../helper/calculator";
 import {giveConclustion} from "../../helper/conclusion";
 import Meta from "../../components/Meta/Meta";
 import {useDispatch, useSelector} from "react-redux";
-import {getProjects} from "../../store/projectSlice";
+import {getOneProject, getProjects} from "../../store/projectSlice";
 import {AppDispatch, RootState} from "../../store/store";
+import {toast} from "react-toastify";
+import ReportChart from "../../components/ReportChart/ReportChart";
 
 const PortfolioScreen = () => {
     const initPortfolio = {
@@ -25,32 +25,55 @@ const PortfolioScreen = () => {
         pv: 0,
     };
 
-    const [project, setProject] = useState(-1);
+    const [projectId, setProject] = useState("");
     const [portfolio, setPortfolio] = useState(initPortfolio);
+    const [reportData, setReportData] = useState({ac: [0], pv: [0], ev: [0]});
 
     const dispatch = useDispatch<AppDispatch>();
-    const {projects} = useSelector((state: RootState) => state.projects);
+    const {projects, project} = useSelector(
+        (state: RootState) => state.projects
+    );
 
     useEffect(() => {
         dispatch(getProjects());
     }, []);
 
     useEffect(() => {
-        const report =
-            project !== -1 ? calPortfolio(data[project].value) : initPortfolio;
-        setPortfolio(report);
-        console.log(report);
-    }, [project]);
+        if (projectId !== "")
+            toast.promise(
+                dispatch(getOneProject(projectId))
+                    .unwrap()
+                    .then((payload) => {
+                        setReportData(calCost(payload.tasks));
+
+                        console.log(reportData.ev[reportData.ev.length - 1]);
+
+                        const report = calPortfolio(
+                            payload.tasks,
+                            reportData.ev[reportData.ev.length - 1]
+                        );
+                        setPortfolio(report);
+                        // console.log(report);
+                    }),
+                {
+                    pending: "Analysing your data...",
+                }
+            );
+        else setPortfolio(initPortfolio);
+
+        // const report =
+        //     projectId !== "" ? calPortfolio(project.tasks!!) : initPortfolio;
+        // setPortfolio(report);
+        // console.log(report);
+    }, [projectId]);
 
     return (
         <>
             <Meta>Portfolio</Meta>
             <h1>Portfolio</h1>
             <div className="mb-4">
-                <Form.Select
-                    onChange={(e) => setProject(parseInt(e.target.value))}
-                >
-                    <option value={-1}>Choose a project</option>
+                <Form.Select onChange={(e) => setProject(e.target.value)}>
+                    <option value={""}>Choose a project</option>
                     {projects.map((p) => (
                         <option value={p.id} key={p.id}>
                             {p.name}
@@ -90,12 +113,19 @@ const PortfolioScreen = () => {
                     </tr>
                 </tbody>
             </Table>
-            {project >= 0 && (
+            {projectId !== "" && (
                 <Row>
                     <Col md={1}>
                         <strong>Conclusion:</strong>
                     </Col>
                     <Col>{giveConclustion(portfolio)}</Col>
+                    <div>
+                        <ReportChart
+                            ac={reportData.ac}
+                            ev={reportData.ev}
+                            pv={reportData.pv}
+                        />
+                    </div>
                 </Row>
             )}
             <div className="portfolio-desc mt-3">

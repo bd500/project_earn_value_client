@@ -1,3 +1,5 @@
+import {RowData} from "../components/DynamicTable/DynamicTable";
+
 const calCumCost = (data: number[]) => {
     let result: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     data.forEach((value, index) => {
@@ -8,7 +10,51 @@ const calCumCost = (data: number[]) => {
     return result;
 };
 
-const calPortfolio = (data: any[]) => {
+const calCost = (data: RowData[]) => {
+    let result: {ac: number[]; pv: number[]; ev: number[]} = {
+        ac: [],
+        pv: [],
+        ev: [],
+    };
+
+    let ac = 0;
+    let ev = 0;
+    let pv = 0;
+
+    let pvTasks: number[] = [];
+    data.forEach((item) => {
+        const temp = item.pv.reduce((acc, cur) => acc + cur);
+        pvTasks.push(temp);
+    });
+
+    for (let i = 0; i < data[0].ac.length; i++) {
+        ev = 0;
+        data.forEach((item, index) => {
+            pv += item.pv[i];
+            ac += item.ac[i];
+            // ev += parseFloat(((item.pv[i] * item.progress[i]) / 100).toFixed(2));
+            if (item.progress[i] > 0)
+                ev += parseFloat(
+                    ((pvTasks[index] * item.progress[i]) / 100).toFixed(2)
+                );
+        });
+
+        if (ev === 0) {
+            ev = result.ev[result.ac.length - 1];
+        }
+
+        if (result.ac[result.ac.length - 1] !== ac) {
+            result.ac.push(ac);
+
+            result.ev.push(ev);
+        }
+        result.pv.push(pv);
+    }
+
+    return result;
+};
+
+const calPortfolio = (data: RowData[], ev: number) => {
     let result = {
         bac: 0,
         ac: 0,
@@ -24,11 +70,13 @@ const calPortfolio = (data: any[]) => {
         pv: 0,
     };
 
+    result.ev = ev;
     data.forEach((item) => {
-        result.bac += item.pv;
-        result.ac += item.ac;
-        result.ev += item.ev;
-        result.pv += result.ac === 0 ? 0 : item.pv;
+        result.bac += item.pv.reduce((acc, cur) => acc + cur);
+        result.ac += item.ac.reduce((acc, cur) => acc + cur);
+        // result.ev += item.ev.reduce((acc, cur) => acc + cur);
+        // result.ev = item.progress.reduce((acc, cur) => acc + cur);
+        result.pv += item.pv.reduce((acc, cur) => acc + cur);
     });
 
     result.cpi = parseFloat((result.ev / result.ac).toFixed(2));
@@ -42,4 +90,4 @@ const calPortfolio = (data: any[]) => {
     return result;
 };
 
-export {calCumCost, calPortfolio};
+export {calCumCost, calPortfolio, calCost};

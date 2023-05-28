@@ -9,7 +9,12 @@ interface TableRowProps {
     handlePvChange: (rowNum: number, value: number, index: number) => void;
     handleNameChange: (rowNum: number, value: string) => void;
     handlePrecedeChange: (rowNum: number, value: string) => void;
-    handleProgressChange: (rowNum: number, value: string) => void;
+    handleProgressChange: (
+        rowNum: number,
+        value: string,
+        index: number
+    ) => void;
+    // handleEvChange: (rowNum: number, value: number, index: number) => void;
 }
 
 const TableRow = ({
@@ -20,7 +25,8 @@ const TableRow = ({
     handleNameChange,
     handlePrecedeChange,
     handleProgressChange,
-}: TableRowProps) => {
+}: // handleEvChange,
+TableRowProps) => {
     return (
         <>
             {rowData.map((row, rowNum) => (
@@ -42,7 +48,7 @@ const TableRow = ({
                             }
                         />
                     </td>
-                    <td>
+                    {/* <td>
                         <FormControl
                             value={row.progress}
                             onChange={(e) =>
@@ -51,13 +57,16 @@ const TableRow = ({
                             type="number"
                             isInvalid={row.progress > 100 || row.progress < 0}
                         />
-                    </td>
+                    </td> */}
                     <td>
                         <div style={{color: "red", textDecoration: "bold"}}>
                             AC
                         </div>
                         <div style={{color: "blue", textDecoration: "bold"}}>
                             PV
+                        </div>
+                        <div style={{color: "green", textDecoration: "bold"}}>
+                            %
                         </div>
                     </td>
                     {row.ac.map((item, index) => (
@@ -88,6 +97,24 @@ const TableRow = ({
                                     }
                                     type="number"
                                     size="sm"
+                                />
+                            </div>
+                            <div>
+                                <FormControl
+                                    value={row.progress[index]}
+                                    onChange={(e) =>
+                                        handleProgressChange(
+                                            rowNum,
+                                            e.target.value,
+                                            index
+                                        )
+                                    }
+                                    type="number"
+                                    size="sm"
+                                    isInvalid={
+                                        row.progress[index] > 100 ||
+                                        row.progress[index] < 0
+                                    }
                                 />
                             </div>
                         </td>

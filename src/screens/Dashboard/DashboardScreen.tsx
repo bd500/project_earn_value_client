@@ -29,15 +29,24 @@ const DashboardScreen = () => {
         else atRisk++;
 
         p.tasks?.map((t) => {
-            if (t.progress === 100) tasksFinished++;
+            // if (t.progress === 100) tasksFinished++;
+            // tasks++;
+            if (t.progress.find((item) => item === 100)) tasksFinished++;
             tasks++;
+            return 0;
         });
     });
 
+    // const progress = [
+    //     {name: "completed", value: completed, color: "#00C49F"},
+    //     {name: "Ongoing", value: ongoing, color: "#0088FE"},
+    //     {name: "At Risk", value: atRisk, color: "#FF8042"},
+    // ];
+
     const progress = [
-        {name: "completed", value: completed, color: "#00C49F"},
-        {name: "Ongoing", value: ongoing, color: "#0088FE"},
-        {name: "At Risk", value: atRisk, color: "#FF8042"},
+        {name: "Completed", value: completed, color: "#00a300"},
+        {name: "Ongoing", value: ongoing, color: "#0000ff"},
+        {name: "At Risk", value: atRisk, color: "#ff0000"},
     ];
 
     const renderProject = (project: any) => {
@@ -48,7 +57,7 @@ const DashboardScreen = () => {
                 <td>{project.status}</td>
                 <td>
                     <ProgressBar
-                        now={60}
+                        now={(100 * tasksFinished) / tasks}
                         variant={
                             project.status === "Ongoing"
                                 ? "primary"

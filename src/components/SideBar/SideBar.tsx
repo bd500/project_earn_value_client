@@ -1,12 +1,6 @@
 import {Sidebar, Menu, MenuItem} from "react-pro-sidebar";
 import {Link, useLocation} from "react-router-dom";
-import {
-    FaBars,
-    FaClock,
-    FaBriefcase,
-    FaFolder,
-    FaChartArea,
-} from "react-icons/fa";
+import {FaBars, FaClock, FaBriefcase, FaFolder} from "react-icons/fa";
 
 const SideBar = () => {
     const location = useLocation();
@@ -27,16 +21,6 @@ const SideBar = () => {
                     >
                         Dashboard
                     </MenuItem>
-
-                    <MenuItem
-                        component={<Link to={"/track"} />}
-                        icon={<FaClock />}
-                        style={
-                            location.pathname === "/track" ? actived : undefined
-                        }
-                    >
-                        Track
-                    </MenuItem>
                     <MenuItem
                         component={<Link to={"/project"} />}
                         icon={<FaBriefcase />}
@@ -49,6 +33,15 @@ const SideBar = () => {
                         Project
                     </MenuItem>
                     <MenuItem
+                        component={<Link to={"/track"} />}
+                        icon={<FaClock />}
+                        style={
+                            location.pathname === "/track" ? actived : undefined
+                        }
+                    >
+                        Track
+                    </MenuItem>
+                    <MenuItem
                         component={<Link to={"/portfolio"} />}
                         icon={<FaFolder />}
                         style={
@@ -59,7 +52,7 @@ const SideBar = () => {
                     >
                         Portfolio
                     </MenuItem>
-                    <MenuItem
+                    {/* <MenuItem
                         component={<Link to={"/report"} />}
                         icon={<FaChartArea />}
                         style={
@@ -69,7 +62,7 @@ const SideBar = () => {
                         }
                     >
                         Report
-                    </MenuItem>
+                    </MenuItem> */}
                 </Menu>
             </Sidebar>
         </div>
