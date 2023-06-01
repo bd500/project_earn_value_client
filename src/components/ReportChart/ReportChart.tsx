@@ -8,34 +8,15 @@ import {
     Line,
     Label,
 } from "recharts";
-import FileSaver from "file-saver";
-import {useCallback} from "react";
-import {useCurrentPng} from "recharts-to-png";
-import {Button} from "react-bootstrap";
-import * as XLSX from "xlsx";
 
 interface ReportChartProps {
     ac: number[];
     ev: number[];
     pv: number[];
+    reference: any;
 }
 
-const ReportChart = ({ac, ev, pv}: ReportChartProps) => {
-    const [getPng, {ref, isLoading}] = useCurrentPng();
-
-    // Can also pass in options for html2canvas
-    // const [getPng, {ref}] = useCurrentPng({backgroundColor: "#000"});
-
-    const handleDownload = useCallback(async () => {
-        const png = await getPng();
-
-        // Verify that png is not undefined
-        if (png) {
-            // Download with FileSaver
-            FileSaver.saveAs(png, "myChart.png");
-        }
-    }, [getPng]);
-
+const ReportChart = ({ac, ev, pv, reference}: ReportChartProps) => {
     const reportData = [{}];
 
     const getData = () => {
@@ -63,7 +44,12 @@ const ReportChart = ({ac, ev, pv}: ReportChartProps) => {
     return (
         <>
             <h3>Earned Value Analysis</h3>
-            <LineChart data={reportData} width={730} height={250} ref={ref}>
+            <LineChart
+                data={reportData}
+                width={730}
+                height={250}
+                ref={reference}
+            >
                 <CartesianGrid strokeDasharray={"4 2"} />
                 <XAxis dataKey={"name"}>
                     <Label
@@ -102,14 +88,6 @@ const ReportChart = ({ac, ev, pv}: ReportChartProps) => {
                     strokeWidth={2}
                 />
             </LineChart>
-            <Button
-                variant="danger"
-                disabled={isLoading}
-                onClick={handleDownload}
-                className="my-3"
-            >
-                Export To Excel
-            </Button>
         </>
     );
 };

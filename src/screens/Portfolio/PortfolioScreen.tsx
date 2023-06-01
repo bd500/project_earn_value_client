@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {Form, Row, Table, Col} from "react-bootstrap";
+import {useCallback, useEffect, useState} from "react";
+import {Form, Row, Table, Col, Button} from "react-bootstrap";
 import {calCost, calPortfolio} from "../../helper/calculator";
 import {giveConclustion} from "../../helper/conclusion";
 import Meta from "../../components/Meta/Meta";
@@ -8,6 +8,11 @@ import {getOneProject, getProjects} from "../../store/projectSlice";
 import {AppDispatch, RootState} from "../../store/store";
 import {toast} from "react-toastify";
 import ReportChart from "../../components/ReportChart/ReportChart";
+import * as XLSX from "xlsx";
+import FileSaver from "file-saver";
+import {useCurrentPng} from "recharts-to-png";
+import excel from "exceljs";
+import {FaFileExport} from "react-icons/fa";
 
 const PortfolioScreen = () => {
     const initPortfolio = {
@@ -44,33 +49,86 @@ const PortfolioScreen = () => {
                 dispatch(getOneProject(projectId))
                     .unwrap()
                     .then((payload) => {
-                        setReportData(calCost(payload.tasks));
-
-                        console.log(reportData.ev[reportData.ev.length - 1]);
-
+                        const ev = payload.report.ev;
                         const report = calPortfolio(
                             payload.tasks,
-                            reportData.ev[reportData.ev.length - 1]
+                            ev[ev.length - 1]
                         );
                         setPortfolio(report);
+                        setReportData(payload.report);
                         // console.log(report);
                     }),
                 {
                     pending: "Analysing your data...",
+                    error: "error",
                 }
             );
         else setPortfolio(initPortfolio);
+    }, [projectId, dispatch]);
 
-        // const report =
-        //     projectId !== "" ? calPortfolio(project.tasks!!) : initPortfolio;
-        // setPortfolio(report);
-        // console.log(report);
-    }, [projectId]);
+    const exportHandler = () => {
+        // const ws = XLSX.utils.json_to_sheet([portfolio]);
+        // const wb = {Sheets: {data: ws}, SheetNames: ["data"]};
+        // const excelBuffer = XLSX.write(wb, {bookType: "xlsx", type: "array"});
+        // const fileType =
+        //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+        // const data = new Blob([excelBuffer], {type: ""});
+        // FileSaver.saveAs(data, "myExcel.xlsx");
+    };
+
+    const [getPng, {ref, isLoading}] = useCurrentPng();
+
+    const handleDownload = useCallback(async () => {
+        const png = await getPng();
+        // console.log(png);
+
+        const wb = new excel.Workbook();
+        wb.creator = "Me";
+        wb.lastModifiedBy = "Me";
+        wb.created = new Date();
+        wb.modified = new Date();
+
+        const chartImg = wb.addImage({
+            base64: png,
+            extension: "png",
+        });
+        const sheet1 = wb.addWorksheet("Report");
+
+        sheet1.columns = [
+            {header: "BAC", key: "bac"},
+            {header: "AC", key: "ac"},
+            {header: "EV", key: "ev"},
+            {header: "CV", key: "cv"},
+            {header: "CPI", key: "cpi"},
+            {header: "SV", key: "sv"},
+            {header: "SPI", key: "spi"},
+            {header: "VAC", key: "vac"},
+            {header: "EAC", key: "eac"},
+            {header: "ETC", key: "etc"},
+        ];
+
+        sheet1.addRow(portfolio);
+        sheet1.addImage(chartImg, {
+            tl: {col: 0, row: 6},
+            ext: {width: 912, height: 312},
+        });
+        sheet1.getCell("F5").value = "Earned Value Analysis Graph";
+
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {type: "application/xlsx"});
+        FileSaver.saveAs(blob, "myReport.xlsx");
+
+        // Verify that png is not undefined
+        // if (png) {
+        //     FileSaver.saveAs(png, "myChart.png");
+        // }
+    }, [getPng]);
 
     return (
         <>
             <Meta>Portfolio</Meta>
             <h1>Portfolio</h1>
+
             <div className="mb-4">
                 <Form.Select onChange={(e) => setProject(e.target.value)}>
                     <option value={""}>Choose a project</option>
@@ -104,29 +162,46 @@ const PortfolioScreen = () => {
                         <td>${portfolio.ac}</td>
                         <td>${portfolio.ev}</td>
                         <td>${portfolio.cv}</td>
-                        <td>${portfolio.cpi}</td>
+                        <td>${portfolio.cpi.toFixed(2)}</td>
                         <td>${portfolio.sv}</td>
-                        <td>${portfolio.spi}</td>
-                        <td>${portfolio.vac}</td>
-                        <td>${portfolio.eac}</td>
-                        <td>${portfolio.etc}</td>
+                        <td>${portfolio.spi.toFixed(2)}</td>
+                        <td>${portfolio.vac.toFixed(2)}</td>
+                        <td>${portfolio.eac.toFixed(2)}</td>
+                        <td>${portfolio.etc.toFixed(2)}</td>
                     </tr>
                 </tbody>
             </Table>
             {projectId !== "" && (
-                <Row>
-                    <Col md={1}>
-                        <strong>Conclusion:</strong>
-                    </Col>
-                    <Col>{giveConclustion(portfolio)}</Col>
-                    <div>
-                        <ReportChart
-                            ac={reportData.ac}
-                            ev={reportData.ev}
-                            pv={reportData.pv}
-                        />
-                    </div>
-                </Row>
+                <>
+                    <Row>
+                        <Col md={1}>
+                            <strong>Conclusion:</strong>
+                        </Col>
+                        <Col>{giveConclustion(portfolio)}</Col>
+                        <div>
+                            <ReportChart
+                                ac={reportData.ac}
+                                ev={reportData.ev}
+                                pv={reportData.pv}
+                                reference={ref}
+                            />
+                        </div>
+                    </Row>
+                    <Button
+                        variant="danger"
+                        disabled={isLoading}
+                        onClick={handleDownload}
+                        className="my-3"
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <FaFileExport />
+                        Export To Excel
+                    </Button>
+                </>
             )}
             <div className="portfolio-desc mt-3">
                 <Row>

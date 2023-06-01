@@ -1,12 +1,17 @@
-import {Button, Table} from "react-bootstrap";
+import {Button, Card, Col, Row, Table} from "react-bootstrap";
 import TableRow from "./TableRow";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {FiPlus} from "react-icons/fi";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../store/store";
-import {getOneProject, updateProject} from "../../store/projectSlice";
+import {
+    getOneProject,
+    updateProject,
+    updateReport,
+} from "../../store/projectSlice";
 import {FaFileExcel, FaSave} from "react-icons/fa";
 import {toast} from "react-toastify";
+import Excel from "exceljs";
 
 export interface RowData {
     name: string;
@@ -21,10 +26,12 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
     const {project} = useSelector((state: RootState) => state.projects);
 
     const [rowsData, setRowsData] = useState<RowData[]>([]);
+    const [fileName, setFileName] = useState("");
 
     const newCostCol = (duration: number) => {
         return Array.from({length: duration}, (item, index) => 0);
     };
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (projectId)
@@ -130,7 +137,7 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
 
     const handleSave = () => {
         toast.promise(
-            dispatch(updateProject({id: projectId, tasks: rowsData})).unwrap(),
+            dispatch(updateReport({id: projectId, tasks: rowsData})).unwrap(),
             {
                 success: "Project data has been saved",
                 pending: "Processing...",
@@ -158,10 +165,68 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
         );
     };
 
-    const handleImportExel = () => {};
+    const handleImportExel = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const wb = new Excel.Workbook();
+        const reader = new FileReader();
+
+        setFileName(e.target.files!![0].name);
+        reader.readAsArrayBuffer(e.target.files!![0]);
+        reader.onload = () => {
+            const buffer = reader.result as ArrayBuffer;
+            const data: RowData[] = [];
+
+            wb.xlsx.load(buffer!!).then((workbook) => {
+                const sheet1 = workbook.worksheets[0];
+                // sheet1.eachRow((row, rowIndex) => {
+                //     console.log(row.values, rowIndex);
+                // });
+                for (let i = 2; i <= sheet1.rowCount; i = i + 3) {
+                    const r1 = sheet1.getRow(i);
+                    const r2 = sheet1.getRow(i + 1);
+                    const r3 = sheet1.getRow(i + 2);
+                    const acArray: number[] = [];
+                    const progressArray: number[] = [];
+                    const pvArray: number[] = [];
+                    for (let j = 5; j < project.duration!! + 5; j++) {
+                        const ac = r1.getCell(j).toString();
+                        const pv = r2.getCell(j).toString();
+                        const progress = r3.getCell(j).toString();
+
+                        acArray.push(parseFloat(ac) || 0);
+                        progressArray.push(parseFloat(progress) || 0);
+                        pvArray.push(parseFloat(pv) || 0);
+                    }
+                    const tableRow: RowData = {
+                        name: r1.getCell(2).toString(),
+                        precede: r1.getCell(3).toString(),
+                        ac: acArray,
+                        progress: progressArray,
+                        pv: pvArray,
+                    };
+                    console.log(tableRow);
+
+                    data.push(tableRow);
+                }
+            });
+            setRowsData(data);
+            console.log(rowsData);
+        };
+    };
 
     return (
         <>
+            <div hidden={project.note ? false : true}>
+                <Row>
+                    <Col md={4}>
+                        <Card body className="mb-4">
+                            <Card.Title>
+                                <b>Project Note</b>
+                            </Card.Title>
+                            <Card.Text>{project.note}</Card.Text>
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
             <div hidden={projectId ? false : true}>
                 <Table responsive="md">
                     <thead>
@@ -217,9 +282,22 @@ const DynamicTable = ({projectId}: {projectId: string}) => {
                         ? "Unmark as Completed"
                         : "Mark as Completed"}
                 </Button>
-                <Button variant="danger" onClick={handleImportExel}>
+                <Button
+                    variant="danger"
+                    onClick={() => {
+                        inputRef?.current?.click();
+                    }}
+                >
+                    <input
+                        type="file"
+                        style={{display: "none"}}
+                        ref={inputRef}
+                        onChange={handleImportExel}
+                        className="my-3"
+                    />
                     <FaFileExcel /> Import Excel File
                 </Button>
+                <div>{fileName}</div>
             </div>
         </>
     );

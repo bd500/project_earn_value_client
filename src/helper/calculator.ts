@@ -11,10 +11,16 @@ const calCumCost = (data: number[]) => {
 };
 
 const calCost = (data: RowData[]) => {
-    let result: {ac: number[]; pv: number[]; ev: number[]} = {
+    let result: {
+        ac: number[];
+        pv: number[];
+        ev: number[];
+        currentMonth: number;
+    } = {
         ac: [],
         pv: [],
         ev: [],
+        currentMonth: 1,
     };
 
     let ac = 0;
@@ -51,6 +57,7 @@ const calCost = (data: RowData[]) => {
         result.pv.push(pv);
     }
 
+    result.currentMonth = result.ev.length;
     return result;
 };
 
@@ -70,7 +77,14 @@ const calPortfolio = (data: RowData[], ev: number) => {
         pv: 0,
     };
 
+    // const cumCost = calCost(data);
+
+    // result.ev = cumCost.ev[cumCost.currentMonth - 1];
+    // result.bac = cumCost.pv[cumCost.pv.length - 1];
+    // result.ac = cumCost.ac[cumCost.currentMonth - 1];
+
     result.ev = ev;
+
     data.forEach((item) => {
         result.bac += item.pv.reduce((acc, cur) => acc + cur);
         result.ac += item.ac.reduce((acc, cur) => acc + cur);
@@ -81,11 +95,14 @@ const calPortfolio = (data: RowData[], ev: number) => {
 
     result.cpi = parseFloat((result.ev / result.ac).toFixed(2));
     result.cv = result.ev - result.ac;
-    result.etc = parseFloat(((result.bac - result.ev) / result.cpi).toFixed(2));
-    result.eac = parseFloat((result.etc + result.ac).toFixed(2));
-    result.vac = parseFloat((result.bac - result.eac).toFixed(2));
+    // result.etc = parseFloat(((result.bac - result.ev) / result.cpi).toFixed(2));
+    result.etc = (result.bac - result.ev) / result.cpi;
+    result.eac = result.etc + result.ac;
+    result.vac = result.bac - result.eac;
     result.sv = result.ev - result.pv;
-    result.spi = parseFloat((result.ev / result.pv).toFixed(2));
+    result.spi = result.ev / result.pv;
+
+    // console.log(data);
 
     return result;
 };

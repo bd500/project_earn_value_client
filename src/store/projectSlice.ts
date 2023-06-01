@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
 import {RowData} from "../components/DynamicTable/DynamicTable";
+import {calCost, calPortfolio} from "../helper/calculator";
 
 interface Project {
     id?: string;
@@ -8,7 +9,7 @@ interface Project {
     duration?: number;
     note?: string;
     tasks?: RowData[];
-    report?: string;
+    report?: any;
     status?: string;
 }
 
@@ -17,7 +18,9 @@ interface InitState {
     project: Project;
 }
 
-const currentUser = JSON.parse(localStorage.getItem("userInfo") || "");
+// const currentUser = JSON.parse(localStorage.getItem("userInfo") || "");
+const userInfo = localStorage.getItem("userInfo");
+const currentUser = userInfo ? JSON.parse(userInfo) : null;
 
 const config = {
     headers: {
@@ -76,8 +79,36 @@ export const updateProject = createAsyncThunk(
     }) => {
         const project = {name, duration, status, note, tasks};
         const {data} = await axios.patch(
-            `http://localhost:3001/project/${id}`,
+            `http://localhost:3001/project/info/${id}`,
             project,
+            config
+        );
+        return data;
+    }
+);
+
+export const updateReport = createAsyncThunk(
+    "updateReport",
+    async ({tasks, id}: {tasks: RowData[]; id: string}) => {
+        const {ac, ev, pv} = calCost(tasks);
+        // const report = calPortfolio(
+        //     tasks,
+        //     cumCost.ev[cumCost.currentMonth - 1]
+        // );
+        const {data} = await axios.patch(
+            `http://localhost:3001/project/${id}`,
+            {tasks, report: {ac, ev, pv}},
+            config
+        );
+        return data;
+    }
+);
+
+export const deleteProject = createAsyncThunk(
+    "deleteProject",
+    async (id: string) => {
+        const {data} = await axios.delete(
+            `http://localhost:3001/project/${id}`,
             config
         );
         return data;
@@ -107,7 +138,12 @@ const projectSlice = createSlice({
         });
 
         builder.addCase(updateProject.fulfilled, (state, action) => {
-            state.project = action.payload;
+            //state.project = action.payload;
+            console.log(action.payload);
+        });
+
+        builder.addCase(deleteProject.fulfilled, (state, action) => {
+            console.log(action.payload);
         });
     },
 });

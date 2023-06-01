@@ -32,7 +32,7 @@ const TrackScreen = () => {
                     </FormSelect>
                 </FormGroup>
             </div>
-            <div hidden={projectId ? false : true}>
+            {/* <div hidden={projectId ? false : true}>
                 <Row>
                     <Col md={4}>
                         <Card body className="mb-4">
@@ -43,7 +43,7 @@ const TrackScreen = () => {
                         </Card>
                     </Col>
                 </Row>
-            </div>
+            </div> */}
             <h3>Actual Cost For Perform Scheduled</h3>
             <DynamicTable projectId={projectId} />
             <div>

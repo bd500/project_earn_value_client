@@ -48,16 +48,7 @@ TableRowProps) => {
                             }
                         />
                     </td>
-                    {/* <td>
-                        <FormControl
-                            value={row.progress}
-                            onChange={(e) =>
-                                handleProgressChange(rowNum, e.target.value)
-                            }
-                            type="number"
-                            isInvalid={row.progress > 100 || row.progress < 0}
-                        />
-                    </td> */}
+
                     <td>
                         <div style={{color: "red", textDecoration: "bold"}}>
                             AC

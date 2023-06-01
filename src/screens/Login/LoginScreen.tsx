@@ -30,11 +30,9 @@ const LoginScreen = () => {
     return (
         <>
             <Meta>Login</Meta>
-
             <Container>
                 <Row className="justify-content-md-center mt-5">
                     <Col md={6} xs={12}>
-                        <h1>Create an Account</h1>
                         <Form onSubmit={submitHandler}>
                             <Form.Group controlId="email">
                                 <Form.Label>Email</Form.Label>

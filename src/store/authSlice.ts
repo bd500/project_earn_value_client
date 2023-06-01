@@ -18,8 +18,12 @@ const config = {
     },
 };
 
+const userInfo = localStorage.getItem("userInfo");
+const currentUser = userInfo ? JSON.parse(userInfo) : null;
+
 const initialState = {
-    userInfo: JSON.parse(localStorage.getItem("userInfo") || ""),
+    // userInfo: JSON.parse(localStorage.getItem("userInfo") || ""),
+    userInfo: currentUser,
 };
 
 export const login = createAsyncThunk(
